@@ -71,6 +71,33 @@ function doneTyping() {
           }
         }
       }
+      let names = [];
+
+      $(".autocomplete-list").click(function() {
+        let value = this.innerHTML;
+
+        if (names.indexOf(value) === -1) {
+          names.push(value);
+
+          let div = document.createElement("div");
+          div.classList.add("ac-sugestion");
+          let sugestionNameElement = document.createElement("label");
+          sugestionNameElement.classList.add("sugestion-name");
+          let sugestionName = document.createTextNode(value);
+          let sugestionCloseElement = document.createElement("label");
+          sugestionCloseElement.classList.add("close-icon");
+          let sugestionClose = document.createTextNode("x");
+          sugestionNameElement.appendChild(sugestionName);
+          sugestionCloseElement.appendChild(sugestionClose);
+          div.appendChild(sugestionNameElement);
+          div.appendChild(sugestionCloseElement);
+          let element = $("#myInput");
+          element.before(div);
+          $(".ac-sugestion").click(function() {
+            this.remove();
+          });
+        }
+      });
     });
   } else {
     list.innerHTML = "";
