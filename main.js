@@ -94,6 +94,7 @@ function doneTyping() {
           let element = $("#myInput");
           element.before(div);
           $(".ac-sugestion").click(function() {
+            names.splice(names.indexOf(value), 1)
             this.remove();
           });
         }
