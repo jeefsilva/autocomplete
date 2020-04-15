@@ -1,25 +1,24 @@
 //setup antes da função
 var typingTimer; //variável do Timer
 var doneTypingInterval = 500; //tempo do intervalo
-var $input = $("#myInput");
+var $input = document.querySelector("#myInput");
 var list = document.createElement("ul");
 list.classList.add("autocomplete-ul");
 
 //quando parar de digitar começa a contagem
-$input.on("keyup", function() {
+$input.addEventListener("keyup", function() {
   clearTimeout(typingTimer);
   typingTimer = setTimeout(doneTyping, doneTypingInterval);
 });
 
 //quando digitar, zera a contagem
-$input.on("keydown", function() {
+$input.addEventListener("keydown", function() {
   clearTimeout(typingTimer);
 });
 
 //quando o usuário "finalizar a digitação," faça algo
 function doneTyping() {
-  let text = $("#myInput").val();
-
+  let text = $input.value;
   var settings = {
     async: true,
     crossDomain: true,
@@ -29,7 +28,9 @@ function doneTyping() {
     method: "GET"
   }; //opções da API
 
-  if ($("#myInput").val() !== "") {
+  
+
+  if ($input.value !== "") {
     let loading = $("#loading");
     loading.removeClass("display-none");
     $.ajax(settings).done(function(result) {
@@ -72,8 +73,10 @@ function doneTyping() {
         }
       }
       let names = [];
-
-      $(".autocomplete-list").click(function() {
+      let autocompleteList = document.querySelectorAll(".autocomplete-list");
+      
+      for ( const autocompleteItem of autocompleteList) {
+        autocompleteItem.addEventListener("click", function() {
         let value = this.innerHTML;
 
         if (names.indexOf(value) === -1) {
@@ -91,14 +94,18 @@ function doneTyping() {
           sugestionCloseElement.appendChild(sugestionClose);
           div.appendChild(sugestionNameElement);
           div.appendChild(sugestionCloseElement);
-          let element = $("#myInput");
-          element.before(div);
-          $(".ac-sugestion").click(function() {
+          let element = document.getElementById("sugestion-field");
+          element.appendChild(div);
+          let sugestion = $(".ac-sugestion")
+          sugestion.click(function() {
             names.splice(names.indexOf(value), 1)
             this.remove();
           });
         }
       });
+    }
+
+
     });
   } else {
     list.innerHTML = "";

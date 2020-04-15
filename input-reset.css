@@ -152,12 +152,6 @@ textarea
 
 /* Selects
 -----------------------------------------------*/
-
-select
-{
-
-}
-
 select[multiple] 
 {
 	/* Move the label to the top */
