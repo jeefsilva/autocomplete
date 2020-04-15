@@ -7,16 +7,16 @@ list.classList.add("autocomplete-ul");
 
 var ignoreIds = [];
 var valIgnoreIds = "";
-var keyAC = 0
+var keyAC = 0;
 
 //quando parar de digitar começa a contagem
-$input.addEventListener("keyup", function() {
+$input.addEventListener("keyup", function () {
   clearTimeout(typingTimer);
   typingTimer = setTimeout(doneTyping, doneTypingInterval);
 });
 
 //quando digitar, zera a contagem
-$input.addEventListener("keydown", function() {
+$input.addEventListener("keydown", function () {
   clearTimeout(typingTimer);
 });
 
@@ -29,16 +29,14 @@ function doneTyping() {
     url: `http://nat-advertiser-api.voxus.tv/api/v1/campaigns/autocomplete?data[type]=1&data[text]=${text}&auth[token]=${localStorage.getItem(
       "token"
     )}&${valIgnoreIds}`, //Token da API no LocalStorage
-    method: "GET"
+    method: "GET",
   }; //opções da API
-
-  
 
   if ($input.value !== "") {
     let loading = $("#loading");
     loading.removeClass("display-none");
     // Recebendo dados via API
-    $.ajax(settings).done(function(result) {
+    $.ajax(settings).done(function (result) {
       if (result.status) {
         list.innerHTML = "";
         loading.addClass("display-none");
@@ -86,53 +84,54 @@ function doneTyping() {
       }
       let names = [];
       let autocompleteList = document.querySelectorAll(".autocomplete-list");
-      
-      for ( const autocompleteItem of autocompleteList) {
+
+      for (const autocompleteItem of autocompleteList) {
         // Adicionando item da lista
-        autocompleteItem.addEventListener("click", function() {
-         
-        let data = {
-          id: parseInt(this.id),
-          type: this.type
-        }
-        valIgnoreIds = { "data": { "filter": {
-          "ignoreIds": ignoreIds
-        }}}
-        ignoreIds.push(data)
-        valIgnoreIds = toQueryString(valIgnoreIds)
-      
-        let value = this.innerHTML;
+        autocompleteItem.addEventListener("click", function () {
+          let value = this.innerHTML;
+          list.innerHTML = "";
+          // Verificando se o item já foi adicionado
+          if (names.indexOf(value) === -1) {
+            names.push(value);
 
-        // Verificando se o item já foi adicionado
-        if (names.indexOf(value) === -1) {
-          names.push(value);
+            let data = {
+              id: parseInt(this.id),
+              type: this.type,
+            };
+            valIgnoreIds = {
+              data: {
+                filter: {
+                  ignoreIds: ignoreIds,
+                },
+              },
+            };
+            ignoreIds.push(data);
+            keyAC = 0;
+            valIgnoreIds = toQueryString(valIgnoreIds);
 
-          let div = document.createElement("div");
-          div.classList.add("ac-sugestion");
-          let sugestionNameElement = document.createElement("label");
-          sugestionNameElement.classList.add("sugestion-name");
-          let sugestionName = document.createTextNode(value);
-          let sugestionCloseElement = document.createElement("label");
-          sugestionCloseElement.classList.add("close-icon");
-          let sugestionClose = document.createTextNode("x");
-          sugestionNameElement.appendChild(sugestionName);
-          sugestionCloseElement.appendChild(sugestionClose);
-          div.appendChild(sugestionNameElement);
-          div.appendChild(sugestionCloseElement);
-          let element = document.getElementById("sugestion-field");
-          element.appendChild(div);
-          let sugestion = $(".ac-sugestion")
-          // Removendo item da lista
-          sugestion.click(function() {
-            names.splice(names.indexOf(value), 1)
-            this.remove();
-            keyAC = keyAC--;
-          });
-        }
-      });
-    }
-
-
+            let div = document.createElement("div");
+            div.classList.add("ac-sugestion");
+            let sugestionNameElement = document.createElement("label");
+            sugestionNameElement.classList.add("sugestion-name");
+            let sugestionName = document.createTextNode(value);
+            let sugestionCloseElement = document.createElement("label");
+            sugestionCloseElement.classList.add("close-icon");
+            let sugestionClose = document.createTextNode("x");
+            sugestionNameElement.appendChild(sugestionName);
+            sugestionCloseElement.appendChild(sugestionClose);
+            div.appendChild(sugestionNameElement);
+            div.appendChild(sugestionCloseElement);
+            let element = document.getElementById("sugestion-field");
+            element.appendChild(div);
+            let sugestion = $(".ac-sugestion");
+            // Removendo item da lista
+            sugestion.click(function () {
+              names.splice(names.indexOf(value), 1);
+              this.remove();
+            });
+          }
+        });
+      }
     });
   } else {
     list.innerHTML = "";
@@ -141,29 +140,30 @@ function doneTyping() {
 
 function toQueryString(params = {}, prefix) {
   const query = Object.keys(params).map((k) => {
-      let key = k;
-      var value = params[key];
+    let key = k;
+    var value = params[key];
 
-      if (!value && (value === null || value === undefined || isNaN(value))) {
-          value = '';
-      }
+    if (!value && (value === null || value === undefined || isNaN(value))) {
+      value = "";
+    }
 
-      switch (params.constructor) {
-          case Array:
-              key = `${prefix}[${keyAC}]`;
-              keyAC = keyAC++;
-              break;
-          case Object:
-              key = (prefix ? `${prefix}[${key}]` : key);
-              break;
-      }
+    switch (params.constructor) {
+      case Array:
+        key = `${prefix}[${keyAC}]`;
+        keyAC = keyAC + 1;
+        console.log(keyAC)
+        break;
+      case Object:
+        key = prefix ? `${prefix}[${key}]` : key;
+        break;
+    }
 
-      if (typeof value === 'object') {
-          return toQueryString(value, key); // for nested objects
-      }
+    if (typeof value === "object") {
+      return toQueryString(value, key); // for nested objects
+    }
 
-      return `${key}=${encodeURIComponent(value)}`;
+    return `${key}=${encodeURIComponent(value)}`;
   });
 
-  return query.join('&');
+  return query.join("&");
 }
