@@ -1,6 +1,9 @@
+body {
+  font-family: Montserrat, sans-serif;
+}
+
 body .select2 {
   width: 100% !important;
-  font-family: Montserrat, sans-serif;
 }
 
 .autocomplete-field {
@@ -8,6 +11,7 @@ body .select2 {
   display: flex;
   flex-direction: column;
   align-items: center;
+  font-family: Montserrat, sans-serif;
 }
 
 .autocomplete {
@@ -19,12 +23,15 @@ body .select2 {
   flex-wrap: wrap;
   align-items: center;
   margin-left: 40px;
+  padding: 0.3px;
 }
 
 .autocomplete input {
   width: 100%;
   height: fit-content;
   padding: 12px 20px;
+  font-size: 16px;
+  font-family: Montserrat, sans-serif;
 }
 
 .autocomplete input::placeholder {
@@ -35,20 +42,24 @@ body .select2 {
 
 .autocomplete-ul {
   width: 100%;
-  max-height: 460px;
-  padding: 12px 0;
+  max-height: 200px;
   overflow: scroll;
   margin-left: 40px;
+  background: #ffffff;
+  border: 1px solid #c4c4c4;
+  box-sizing: border-box;
+  box-shadow: 0px 4px 6px #dcdcdc;
 }
 
 .autocomplete-list {
-  padding: 6px 8px;
+  padding: 10px 20px;
   font-size: 16px;
+  font-family: Montserrat, sans-serif;
 }
 
 .autocomplete-list:hover {
   cursor: pointer;
-  background-color: grey;
+  background-color: #eeeeee;
 }
 
 body .display-none {
@@ -60,7 +71,7 @@ body .display-none {
   background: #fafafa;
   border-radius: 6px 6px 0px 0px;
   padding: 8px 16px;
-  min-height: 20px;
+  min-height: 36px;
   display: flex;
   flex-wrap: wrap;
 }
@@ -76,12 +87,14 @@ body .display-none {
   padding: 6px 12px;
   margin: 4px 4px;
   width: max-content;
+  font-family: Montserrat, sans-serif;
 }
 
 .sugestion-name {
   width: max-content;
   margin-right: 12px;
   cursor: pointer;
+  font-family: Montserrat, sans-serif;
 }
 
 .close-icon {
@@ -166,26 +179,24 @@ input,
 label,
 select,
 button,
-textarea
-{
-	margin:0;
-	border:0;
-	padding:0;
-	display:inline-block;
-	vertical-align:middle;
-	white-space:normal;
-	background:none;
-	line-height:1;
-	
-	/* Browsers have different default form fonts */
-	font-size:13px;
-	font-family:Arial;
+textarea {
+  margin: 0;
+  border: 0;
+  padding: 0;
+  display: inline-block;
+  vertical-align: middle;
+  white-space: normal;
+  background: none;
+  line-height: 1;
+
+  /* Browsers have different default form fonts */
+  font-size: 13px;
+  font-family: Arial;
 }
 
 /* Remove the stupid outer glow in Webkit */
-input:focus
-{
-	outline:0;
+input:focus {
+  outline: 0;
 }
 
 /* Box Sizing Reset
@@ -193,79 +204,71 @@ input:focus
 
 /* All of our custom controls should be what we expect them to be */
 input,
-textarea
-{
-	-webkit-box-sizing:content-box;
-	-moz-box-sizing:content-box;
-	box-sizing:content-box;
+textarea {
+  -webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
 }
 
 /* These elements are usually rendered a certain way by the browser */
 button,
-input[type=reset],
-input[type=button],
-input[type=submit],
-input[type=checkbox],
-input[type=radio],
-select
-{
-	-webkit-box-sizing:border-box;
-	-moz-box-sizing:border-box;
-	box-sizing:border-box;
+input[type="reset"],
+input[type="button"],
+input[type="submit"],
+input[type="checkbox"],
+input[type="radio"],
+select {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 /* Text Inputs
 -----------------------------------------------*/
 
-input[type=date],
-input[type=datetime],
-input[type=datetime-local],
-input[type=email],
-input[type=month],
-input[type=number],
-input[type=password],
-input[type=range],
-input[type=search],
-input[type=tel],
-input[type=text],
-input[type=time],
-input[type=url],
-input[type=week]
-{
+input[type="date"],
+input[type="datetime"],
+input[type="datetime-local"],
+input[type="email"],
+input[type="month"],
+input[type="number"],
+input[type="password"],
+input[type="range"],
+input[type="search"],
+input[type="tel"],
+input[type="text"],
+input[type="time"],
+input[type="url"],
+input[type="week"] {
 }
 
 /* Button Controls
 -----------------------------------------------*/
 
-input[type=checkbox],
-input[type=radio]
-{
-	width:13px;
-	height:13px;
+input[type="checkbox"],
+input[type="radio"] {
+  width: 13px;
+  height: 13px;
 }
 
 /* File Uploads
 -----------------------------------------------*/
 
-input[type=file]
-{
-
+input[type="file"] {
 }
 
 /* Search Input
 -----------------------------------------------*/
 
 /* Make webkit render the search input like a normal text field */
-input[type=search]
-{
-	-webkit-appearance:textfield;
-	-webkit-box-sizing:content-box;
+input[type="search"] {
+  -webkit-appearance: textfield;
+  -webkit-box-sizing: content-box;
 }
 
 /* Turn off the recent search for webkit. It adds about 15px padding on the left */
-::-webkit-search-decoration
-{
-	display:none;
+::-webkit-search-decoration {
+  display: none;
 }
 
 /* Buttons
@@ -274,44 +277,41 @@ input[type=search]
 button,
 input[type="reset"],
 input[type="button"],
-input[type="submit"]
-{
-	/* Fix IE7 display bug */
-	overflow:visible;
-	width:auto;
+input[type="submit"] {
+  /* Fix IE7 display bug */
+  overflow: visible;
+  width: auto;
 }
 
 /* IE8 and FF freak out if this rule is within another selector */
-::-webkit-file-upload-button
-{	
-	padding:0;
-	border:0;
-	background:none;
+::-webkit-file-upload-button {
+  padding: 0;
+  border: 0;
+  background: none;
 }
 
 /* Textarea
 -----------------------------------------------*/
 
-textarea 
-{
-	/* Move the label to the top */
-	vertical-align:top;
-	
-	/* Turn off scroll bars in IE unless needed */
-	overflow:auto;
+textarea {
+  /* Move the label to the top */
+  vertical-align: top;
+
+  /* Turn off scroll bars in IE unless needed */
+  overflow: auto;
 }
 
 /* Selects
 -----------------------------------------------*/
-select[multiple] 
-{
-	/* Move the label to the top */
-	vertical-align:top;
+select[multiple] {
+  /* Move the label to the top */
+  vertical-align: top;
 }
 
-ul, li {
-	margin:0;
-	padding: 0;
-	text-indent: 0;
-	list-style-type: none;
+ul,
+li {
+  margin: 0;
+  padding: 0;
+  text-indent: 0;
+  list-style-type: none;
 }

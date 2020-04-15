@@ -5,6 +5,10 @@ var $input = document.querySelector("#myInput");
 var list = document.createElement("ul");
 list.classList.add("autocomplete-ul");
 
+var ignoreIds = [];
+var valIgnoreIds = "";
+var keyAC = 0
+
 //quando parar de digitar começa a contagem
 $input.addEventListener("keyup", function() {
   clearTimeout(typingTimer);
@@ -22,9 +26,9 @@ function doneTyping() {
   var settings = {
     async: true,
     crossDomain: true,
-    url: `http://nat-advertiser-api.voxus.tv/api/v1/campaigns/autocomplete?data%5Btype%5D=1&data%5Btext%5D=${text}&auth%5Btoken%5D=${localStorage.getItem(
+    url: `http://nat-advertiser-api.voxus.tv/api/v1/campaigns/autocomplete?data[type]=1&data[text]=${text}&auth[token]=${localStorage.getItem(
       "token"
-    )}`, //Token da API no LocalStorage
+    )}&${valIgnoreIds}`, //Token da API no LocalStorage
     method: "GET"
   }; //opções da API
 
@@ -33,11 +37,13 @@ function doneTyping() {
   if ($input.value !== "") {
     let loading = $("#loading");
     loading.removeClass("display-none");
+    // Recebendo dados via API
     $.ajax(settings).done(function(result) {
       if (result.status) {
         list.innerHTML = "";
         loading.addClass("display-none");
         localStorage.setItem("token", result.auth.token); //Token atualizada da API
+        // Verificação de tipo do resultado
         for (let i = 0; i < result.response.suggested.length; i++) {
           if (result.response.suggested[i].type === "country") {
             let li = document.createElement("li");
@@ -49,6 +55,8 @@ function doneTyping() {
             li.appendChild(node);
             let element = $("#autocomplete");
             element.after(list);
+            li.setAttribute("id", result.response.suggested[i].id);
+            li.setAttribute("type", result.response.suggested[i].type);
           } else if (result.response.suggested[i].type === "state") {
             let li = document.createElement("li");
             let node = document.createTextNode(
@@ -59,6 +67,8 @@ function doneTyping() {
             li.appendChild(node);
             let element = $("#autocomplete");
             element.after(list);
+            li.setAttribute("id", result.response.suggested[i].id);
+            li.setAttribute("type", result.response.suggested[i].type);
           } else if (result.response.suggested[i].type === "city") {
             let li = document.createElement("li");
             let node = document.createTextNode(
@@ -69,6 +79,8 @@ function doneTyping() {
             li.appendChild(node);
             let element = $("#autocomplete");
             element.after(list);
+            li.setAttribute("id", result.response.suggested[i].id);
+            li.setAttribute("type", result.response.suggested[i].type);
           }
         }
       }
@@ -76,9 +88,22 @@ function doneTyping() {
       let autocompleteList = document.querySelectorAll(".autocomplete-list");
       
       for ( const autocompleteItem of autocompleteList) {
+        // Adicionando item da lista
         autocompleteItem.addEventListener("click", function() {
+         
+        let data = {
+          id: parseInt(this.id),
+          type: this.type
+        }
+        valIgnoreIds = { "data": { "filter": {
+          "ignoreIds": ignoreIds
+        }}}
+        ignoreIds.push(data)
+        valIgnoreIds = toQueryString(valIgnoreIds)
+      
         let value = this.innerHTML;
 
+        // Verificando se o item já foi adicionado
         if (names.indexOf(value) === -1) {
           names.push(value);
 
@@ -97,9 +122,11 @@ function doneTyping() {
           let element = document.getElementById("sugestion-field");
           element.appendChild(div);
           let sugestion = $(".ac-sugestion")
+          // Removendo item da lista
           sugestion.click(function() {
             names.splice(names.indexOf(value), 1)
             this.remove();
+            keyAC = keyAC--;
           });
         }
       });
@@ -110,4 +137,33 @@ function doneTyping() {
   } else {
     list.innerHTML = "";
   }
+}
+
+function toQueryString(params = {}, prefix) {
+  const query = Object.keys(params).map((k) => {
+      let key = k;
+      var value = params[key];
+
+      if (!value && (value === null || value === undefined || isNaN(value))) {
+          value = '';
+      }
+
+      switch (params.constructor) {
+          case Array:
+              key = `${prefix}[${keyAC}]`;
+              keyAC = keyAC++;
+              break;
+          case Object:
+              key = (prefix ? `${prefix}[${key}]` : key);
+              break;
+      }
+
+      if (typeof value === 'object') {
+          return toQueryString(value, key); // for nested objects
+      }
+
+      return `${key}=${encodeURIComponent(value)}`;
+  });
+
+  return query.join('&');
 }
