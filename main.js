@@ -32,107 +32,131 @@ function doneTyping() {
     method: "GET",
   }; //opções da API
 
+  var request = new XMLHttpRequest();
+  request.open(
+    "GET",
+    `http://nat-advertiser-api.voxus.tv/api/v1/campaigns/autocomplete?data[type]=1&data[text]=${text}&auth[token]=${localStorage.getItem(
+      "token"
+    )}&${valIgnoreIds}`,
+    true
+  );
+
   if ($input.value !== "") {
-    let loading = $("#loading");
-    loading.removeClass("display-none");
+    let loading = document.querySelector("#loading");
+    loading.classList.remove("display-none");
     // Recebendo dados via API
-    $.ajax(settings).done(function (result) {
-      if (result.status) {
-        list.innerHTML = "";
-        loading.addClass("display-none");
-        localStorage.setItem("token", result.auth.token); //Token atualizada da API
-        // Verificação de tipo do resultado
-        for (let i = 0; i < result.response.suggested.length; i++) {
-          if (result.response.suggested[i].type === "country") {
-            let li = document.createElement("li");
-            let node = document.createTextNode(
-              `${result.response.suggested[i].country} (país)`
-            );
-            list.appendChild(li);
-            li.classList.add("autocomplete-list");
-            li.appendChild(node);
-            let element = $("#autocomplete");
-            element.after(list);
-            li.setAttribute("id", result.response.suggested[i].id);
-            li.setAttribute("type", result.response.suggested[i].type);
-          } else if (result.response.suggested[i].type === "state") {
-            let li = document.createElement("li");
-            let node = document.createTextNode(
-              `${result.response.suggested[i].state} (estado)`
-            );
-            list.appendChild(li);
-            li.classList.add("autocomplete-list");
-            li.appendChild(node);
-            let element = $("#autocomplete");
-            element.after(list);
-            li.setAttribute("id", result.response.suggested[i].id);
-            li.setAttribute("type", result.response.suggested[i].type);
-          } else if (result.response.suggested[i].type === "city") {
-            let li = document.createElement("li");
-            let node = document.createTextNode(
-              `${result.response.suggested[i].city} (cidade)`
-            );
-            list.appendChild(li);
-            li.classList.add("autocomplete-list");
-            li.appendChild(node);
-            let element = $("#autocomplete");
-            element.after(list);
-            li.setAttribute("id", result.response.suggested[i].id);
-            li.setAttribute("type", result.response.suggested[i].type);
+
+    request.onload = function() {
+      if (this.status >= 200 && this.status < 400) {
+        // Success!
+        var resp = JSON.parse(this.response);
+        if (resp.status) {
+          list.innerHTML = "";
+          loading.classList.add("display-none");
+          localStorage.setItem("token", resp.auth.token); //Token atualizada da API
+          // Verificação de tipo do resultado
+          for (let i = 0; i < resp.response.suggested.length; i++) {
+            if (resp.response.suggested[i].type === "country") {
+              let li = document.createElement("li");
+              let node = document.createTextNode(
+                `${resp.response.suggested[i].country} (país)`
+              );
+              list.appendChild(li);
+              li.classList.add("autocomplete-list");
+              li.appendChild(node);
+              let element = $("#autocomplete");
+              element.after(list);
+              li.setAttribute("id", resp.response.suggested[i].id);
+              li.setAttribute("type", resp.response.suggested[i].type);
+            } else if (resp.response.suggested[i].type === "state") {
+              let li = document.createElement("li");
+              let node = document.createTextNode(
+                `${resp.response.suggested[i].state} (estado)`
+              );
+              list.appendChild(li);
+              li.classList.add("autocomplete-list");
+              li.appendChild(node);
+              let element = document.querySelector("#autocomplete");
+              element.after(list);
+              li.setAttribute("id", resp.response.suggested[i].id);
+              li.setAttribute("type", resp.response.suggested[i].type);
+            } else if (resp.response.suggested[i].type === "city") {
+              let li = document.createElement("li");
+              let node = document.createTextNode(
+                `${resp.response.suggested[i].city} (cidade)`
+              );
+              list.appendChild(li);
+              li.classList.add("autocomplete-list");
+              li.appendChild(node);
+              let element = document.querySelector("#autocomplete");
+              element.after(list);
+              li.setAttribute("id", resp.response.suggested[i].id);
+              li.setAttribute("type", resp.response.suggested[i].type);
+            }
           }
         }
-      }
-      let names = [];
-      let autocompleteList = document.querySelectorAll(".autocomplete-list");
-
-      for (const autocompleteItem of autocompleteList) {
-        // Adicionando item da lista
-        autocompleteItem.addEventListener("click", function () {
-          let value = this.innerHTML;
-          list.innerHTML = "";
-          // Verificando se o item já foi adicionado
-          if (names.indexOf(value) === -1) {
-            names.push(value);
-
-            let data = {
-              id: parseInt(this.id),
-              type: this.type,
-            };
-            valIgnoreIds = {
-              data: {
-                filter: {
-                  ignoreIds: ignoreIds,
+        let names = [];
+        let autocompleteList = document.querySelectorAll(".autocomplete-list");
+  
+        for (const autocompleteItem of autocompleteList) {
+          // Adicionando item da lista
+          autocompleteItem.addEventListener("click", function () {
+            let value = this.innerHTML;
+            list.innerHTML = "";
+            // Verificando se o item já foi adicionado
+            if (names.indexOf(value) === -1) {
+              names.push(value);
+  
+              let data = {
+                id: parseInt(this.id),
+                type: this.type,
+              };
+              valIgnoreIds = {
+                data: {
+                  filter: {
+                    ignoreIds: ignoreIds,
+                  },
                 },
-              },
-            };
-            ignoreIds.push(data);
-            keyAC = 0;
-            valIgnoreIds = toQueryString(valIgnoreIds);
+              };
+              ignoreIds.push(data);
+              keyAC = 0;
+              valIgnoreIds = toQueryString(valIgnoreIds);
+  
+              let div = document.createElement("div");
+              div.classList.add("ac-sugestion");
+              let sugestionNameElement = document.createElement("label");
+              sugestionNameElement.classList.add("sugestion-name");
+              let sugestionName = document.createTextNode(value);
+              let sugestionCloseElement = document.createElement("label");
+              sugestionCloseElement.classList.add("close-icon");
+              let sugestionClose = document.createTextNode("x");
+              sugestionNameElement.appendChild(sugestionName);
+              sugestionCloseElement.appendChild(sugestionClose);
+              div.appendChild(sugestionNameElement);
+              div.appendChild(sugestionCloseElement);
+              let element = document.getElementById("sugestion-field");
+              element.appendChild(div);
+  
+              let sugestions = document.querySelectorAll(".ac-sugestion");
+  
+              // Removendo item da lista
+              for (const sugestion of sugestions) {
+                sugestion.addEventListener("click", function () {
+                  names.splice(names.indexOf(value), 1);
+                  this.remove();
+                  ignoreIds = [];
+                  valIgnoreIds = "";
+                });
+              }
+            }
+          });
+        }
+      
+      } 
+    };
 
-            let div = document.createElement("div");
-            div.classList.add("ac-sugestion");
-            let sugestionNameElement = document.createElement("label");
-            sugestionNameElement.classList.add("sugestion-name");
-            let sugestionName = document.createTextNode(value);
-            let sugestionCloseElement = document.createElement("label");
-            sugestionCloseElement.classList.add("close-icon");
-            let sugestionClose = document.createTextNode("x");
-            sugestionNameElement.appendChild(sugestionName);
-            sugestionCloseElement.appendChild(sugestionClose);
-            div.appendChild(sugestionNameElement);
-            div.appendChild(sugestionCloseElement);
-            let element = document.getElementById("sugestion-field");
-            element.appendChild(div);
-            let sugestion = $(".ac-sugestion");
-            // Removendo item da lista
-            sugestion.click(function () {
-              names.splice(names.indexOf(value), 1);
-              this.remove();
-            });
-          }
-        });
-      }
-    });
+    request.send();
+
   } else {
     list.innerHTML = "";
   }
@@ -151,7 +175,6 @@ function toQueryString(params = {}, prefix) {
       case Array:
         key = `${prefix}[${keyAC}]`;
         keyAC = keyAC + 1;
-        console.log(keyAC)
         break;
       case Object:
         key = prefix ? `${prefix}[${key}]` : key;
